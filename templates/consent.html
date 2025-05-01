@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consent Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="consent-full">
+            <h1>Ethical Research Consent</h1>
+            
+            <div class="section">
+                <h2>Purpose of this Application</h2>
+                <p>This application is designed for <strong>educational and research purposes only</strong> to demonstrate how phishing techniques can be used to capture webcam images and geolocation data.</p>
+            </div>
+            
+            <div class="section">
+                <h2>Data Collection</h2>
+                <p>By proceeding, you consent to:</p>
+                <ul>
+                    <li>Allowing access to your webcam</li>
+                    <li>Allowing access to your location data</li>
+                    <li>The storage of this data for research purposes</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>Data Usage and Security</h2>
+                <p>All data collected will:</p>
+                <ul>
+                    <li>Be stored securely</li>
+                    <li>Be used solely for educational demonstrations</li>
+                    <li>Not be shared with third parties</li>
+                    <li>Be deleted after the research is complete</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>Legal and Ethical Statement</h2>
+                <p>This tool is for <strong>ethical purposes only</strong>. Using this or similar tools to capture personal data without explicit consent is illegal and unethical.</p>
+            </div>
+            
+            <div class="button-group">
+                <a href="/" class="btn btn-primary">I Accept</a>
+                <button class="btn btn-secondary" onclick="window.close()">I Decline</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

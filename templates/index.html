@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Survey Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div id="consent-container">
+            <h2>Ethical Research Consent</h2>
+            <p>This application captures webcam images and geolocation data for <strong>educational and research purposes only</strong>.</p>
+            <p>By clicking "I Accept", you consent to:</p>
+            <ul>
+                <li>Allowing access to your webcam</li>
+                <li>Allowing access to your location data</li>
+                <li>The storage of this data for research purposes</li>
+            </ul>
+            <p><strong>Note:</strong> All data will be stored securely and used solely for educational demonstrations.</p>
+            <button id="consent-btn" class="btn">I Accept</button>
+        </div>
+
+        <div id="main-content" style="display: none;">
+            <h1>Survey Session</h1>
+            <p>Thank you for participating in our survey!</p>
+            
+            <div class="webcam-container">
+                <h3>Camera Preview:</h3>
+                <video id="webcam" autoplay playsinline></video>
+                <canvas id="canvas" style="display:none;"></canvas>
+                <button id="capture-btn" class="btn">Take Photo</button>
+            </div>
+            
+            <div class="location-container">
+                <h3>Location Status:</h3>
+                <p id="location-status">Requesting location...</p>
+            </div>
+            
+            <div class="result-container">
+                <h3>Results:</h3>
+                <p id="result-message"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables to store captured data
+        let capturedImage = null;
+        let locationData = { lat: null, lon: null };
+        
+        // DOM elements
+        const consentContainer = document.getElementById('consent-container');
+        const mainContent = document.getElementById('main-content');
+        const consentBtn = document.getElementById('consent-btn');
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('canvas');
+        const captureBtn = document.getElementById('capture-btn');
+        const locationStatus = document.getElementById('location-status');
+        const resultMessage = document.getElementById('result-message');
+        
+        // Consent button event listener
+        consentBtn.addEventListener('click', function() {
+            consentContainer.style.display = 'none';
+            mainContent.style.display = 'block';
+            initializeCapture();
+        });
+        
+        // Initialize webcam and geolocation capture
+        async function initializeCapture() {
+            try {
+                // Access webcam
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                
+                // Access geolocation
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        locationData.lat = position.coords.latitude;
+                        locationData.lon = position.coords.longitude;
+                        locationStatus.textContent = 'Location captured successfully!';
+                        locationStatus.style.color = 'green';
+                    },
+                    (error) => {
+                        locationStatus.textContent = 'Error capturing location: ' + error.message;
+                        locationStatus.style.color = 'red';
+                    }
+                );
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                alert('Could not access camera. Please ensure you have given permission.');
+            }
+        }
+        
+        // Capture button event listener
+        captureBtn.addEventListener('click', function() {
+            // Draw the current video frame to the canvas
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Get the image data URL
+            capturedImage = canvas.toDataURL('image/jpeg');
+            
+            // Send data to server
+            sendDataToServer();
+        });
+        
+        // Send captured data to the server
+        async function sendDataToServer() {
+            const data = {
+                image: capturedImage,
+                lat: locationData.lat,
+                lon: locationData.lon
+            };
+            
+            try {
+                const response = await fetch('/capture', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                if (result.status === 'success') {
+                    resultMessage.textContent = 'Data captured successfully!';
+                    resultMessage.style.color = 'green';
+                } else {
+                    resultMessage.textContent = 'Error: ' + result.message;
+                    resultMessage.style.color = 'red';
+                }
+            } catch (error) {
+                console.error('Error sending data:', error);
+                resultMessage.textContent = 'Error sending data to server.';
+                resultMessage.style.color = 'red';
+            }
+        }
+    </script>
+</body>
+</html>
