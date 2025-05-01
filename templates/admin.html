@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - Link Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .btn {
+            margin-top: 20px;
+        }
+        .section {
+            margin-top: 30px;
+        }
+        .warning-box {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #ffe6e6;
+            border-left: 4px solid #ff6666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Phishing Link Generator</h1>
+        <p>This page allows you to generate unique phishing links for educational demonstration.</p>
+        
+        <a href="/generate-link" class="btn">Generate New Link</a>
+        
+        <div class="section">
+            <h2>How it works</h2>
+            <p>When you generate a link:</p>
+            <ol>
+                <li>A unique identifier is created</li>
+                <li>When someone clicks the link, they'll see the consent page</li>
+                <li>After consent, their webcam and location data will be captured</li>
+                <li>All data is saved with the unique identifier for tracking</li>
+            </ol>
+        </div>
+        
+        <div class="warning-box">
+            <h3>⚠️ Ethical Use Reminder</h3>
+            <p>This tool is for <strong>educational purposes only</strong>. Always inform users and obtain consent.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -45,6 +45,9 @@
     </div>
 
     <script>
+        // Get the tracking ID from the server if available
+        const trackingId = "{{ tracking_id|default('unknown') }}";
+        
         // Variables to store captured data
         let capturedImage = null;
         let locationData = { lat: null, lon: null };
@@ -110,6 +113,7 @@
         // Send captured data to the server
         async function sendDataToServer() {
             const data = {
+                tracking_id: trackingId,
                 image: capturedImage,
                 lat: locationData.lat,
                 lon: locationData.lon
